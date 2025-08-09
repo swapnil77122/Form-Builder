@@ -83,19 +83,17 @@ const PreviewForm: React.FC = () => {
   };
 
   const handleReset = () => {
-    // Reset to default values
+    // Reset all fields: use defaultValue if available, else empty string
     const resetData: Record<string, any> = {};
     currentForm.fields.forEach(field => {
-      if (field.defaultValue !== undefined) {
-        resetData[field.id] = field.defaultValue;
-      }
+      resetData[field.id] = field.defaultValue !== undefined ? field.defaultValue : '';
     });
-    
+
     // Dispatch all updates
     Object.entries(resetData).forEach(([fieldId, value]) => {
       dispatch(updatePreviewData({ fieldId, value }));
     });
-    
+
     setErrors({});
     setIsSubmitted(false);
   };

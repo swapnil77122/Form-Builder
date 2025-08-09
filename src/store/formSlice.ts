@@ -28,11 +28,11 @@ const formSlice = createSlice({
       state.currentForm.fields.push(newField);
     },
     
-    updateField: (state, action: PayloadAction<{ id: string; updates: Partial<FormField> }>) => {
-      const { id, updates } = action.payload;
-      const fieldIndex = state.currentForm.fields.findIndex(field => field.id === id);
-      if (fieldIndex !== -1) {
-        state.currentForm.fields[fieldIndex] = { ...state.currentForm.fields[fieldIndex], ...updates };
+    updateField: (state, action: PayloadAction<{ fieldId: string; changes: Partial<FormField> }>) => {
+      const { fieldId, changes } = action.payload;
+      const field = state.currentForm.fields.find(f => f.id === fieldId);
+      if (field) {
+        Object.assign(field, changes);
       }
     },
     
@@ -135,17 +135,5 @@ function calculateDerivedValue(field: FormField, previewData: Record<string, any
   }
 }
 
-export const {
-  setFormName,
-  addField,
-  updateField,
-  deleteField,
-  reorderFields,
-  saveForm,
-  loadForm,
-  clearForm,
-  updatePreviewData,
-  deleteForm,
-} = formSlice.actions;
-
+export const { setFormName, saveForm, clearForm, reorderFields, updateField, addField, deleteField, deleteForm, loadForm, updatePreviewData } = formSlice.actions;
 export default formSlice.reducer;

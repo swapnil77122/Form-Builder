@@ -48,8 +48,8 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ field }) => {
   const [showOptionsDialog, setShowOptionsDialog] = useState(false);
   const [showDerivedDialog, setShowDerivedDialog] = useState(false);
 
-  const handleUpdate = (updates: Partial<FormField>) => {
-    dispatch(updateField({ id: field.id, updates }));
+  const handleUpdate = (changes: Partial<FormField>) => {
+    dispatch(updateField({ fieldId: field.id, changes }));
   };
 
   const handleDelete = () => {

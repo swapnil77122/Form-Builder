@@ -111,10 +111,19 @@ const MyForms: React.FC = () => {
       </Paper>
 
       <Grid container spacing={3}>
-        {savedForms
+        {[...savedForms]
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .map((form) => (
-            <Grid item xs={12} md={6} lg={4} key={form.id}>
+            <Grid
+              key={form.id}
+              sx={{
+                width: '100%',
+                '@media (min-width:600px)': { width: '50%' },
+                '@media (min-width:1200px)': { width: '33.33%' },
+                display: 'inline-block',
+                verticalAlign: 'top',
+              }}
+            >
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
