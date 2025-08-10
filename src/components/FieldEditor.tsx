@@ -24,6 +24,7 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Divider,
+  Checkbox,
 } from '@mui/material';
 import {
   Delete,
@@ -135,11 +136,11 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ field }) => {
 
               <Button
                 variant="outlined"
-                onClick={() => setShowValidationDialog(true)}
-                startIcon={<Edit />}
                 size="small"
+                onClick={() => setShowValidationDialog(true)}
+                sx={{ mt: 1, mb: 2 }}
               >
-                Edit Validations ({field.validationRules.length})
+                Edit Validation
               </Button>
 
               <FormControlLabel
@@ -196,13 +197,76 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ field }) => {
       </Card>
 
       {/* Validation Dialog */}
-      <ValidationDialog
-        open={showValidationDialog}
-        onClose={() => setShowValidationDialog(false)}
-        validationRules={field.validationRules}
-        onAddRule={addValidationRule}
-        onRemoveRule={removeValidationRule}
-      />
+      <Dialog open={showValidationDialog} onClose={() => setShowValidationDialog(false)}>
+        <DialogTitle>Edit Validation Rules</DialogTitle>
+        <DialogContent>
+          <List>
+            {field.validationRules.map((rule, index) => (
+              <ListItem key={index}>
+                <ListItemText
+                  primary={rule.type}
+                  secondary={`${rule.message} ${rule.value ? `(${rule.value})` : ''}`}
+                />
+                <ListItemSecondaryAction>
+                  <IconButton onClick={() => removeValidationRule(index)} size="small">
+                    <Close />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+          
+          <Divider sx={{ my: 2 }} />
+          
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <FormControl size="small">
+              <InputLabel>Rule Type</InputLabel>
+              <Select
+                value={'required'}
+                onChange={(e) => {}}
+                label="Rule Type"
+              >
+                <MenuItem value="required">Required</MenuItem>
+                <MenuItem value="minLength">Min Length</MenuItem>
+                <MenuItem value="maxLength">Max Length</MenuItem>
+                <MenuItem value="email">Email Format</MenuItem>
+                <MenuItem value="customPassword">Custom Password</MenuItem>
+              </Select>
+            </FormControl>
+            
+            {('minLength' === 'minLength' || 'maxLength' === 'maxLength') && (
+              <TextField
+                label="Length"
+                type="number"
+                value={''}
+                onChange={(e) => {}}
+                size="small"
+              />
+            )}
+            
+            <TextField
+              label="Error Message"
+              value={''}
+              onChange={(e) => {}}
+              size="small"
+              multiline
+              rows={2}
+            />
+            
+            <Button
+              variant="contained"
+              onClick={() => {}}
+              disabled={false}
+              startIcon={<Add />}
+            >
+              Add Rule
+            </Button>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowValidationDialog(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Options Dialog */}
       <OptionsDialog
@@ -222,105 +286,6 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ field }) => {
         onUpdate={handleUpdate}
       />
     </>
-  );
-};
-
-// Validation Dialog Component
-const ValidationDialog: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  validationRules: ValidationRule[];
-  onAddRule: (rule: ValidationRule) => void;
-  onRemoveRule: (index: number) => void;
-}> = ({ open, onClose, validationRules, onAddRule, onRemoveRule }) => {
-  const [ruleType, setRuleType] = useState<ValidationRule['type']>('required');
-  const [value, setValue] = useState('');
-  const [message, setMessage] = useState('');
-
-  const handleAddRule = () => {
-    if (!message.trim()) return;
-    
-    onAddRule({
-      type: ruleType,
-      value: ruleType === 'minLength' || ruleType === 'maxLength' ? parseInt(value) : value,
-      message: message.trim(),
-    });
-    
-    setValue('');
-    setMessage('');
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Validation Rules</DialogTitle>
-      <DialogContent>
-        <List>
-          {validationRules.map((rule, index) => (
-            <ListItem key={index}>
-              <ListItemText
-                primary={rule.type}
-                secondary={`${rule.message} ${rule.value ? `(${rule.value})` : ''}`}
-              />
-              <ListItemSecondaryAction>
-                <IconButton onClick={() => onRemoveRule(index)} size="small">
-                  <Close />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
-        
-        <Divider sx={{ my: 2 }} />
-        
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <FormControl size="small">
-            <InputLabel>Rule Type</InputLabel>
-            <Select
-              value={ruleType}
-              onChange={(e) => setRuleType(e.target.value as ValidationRule['type'])}
-              label="Rule Type"
-            >
-              <MenuItem value="required">Required</MenuItem>
-              <MenuItem value="minLength">Min Length</MenuItem>
-              <MenuItem value="maxLength">Max Length</MenuItem>
-              <MenuItem value="email">Email Format</MenuItem>
-              <MenuItem value="customPassword">Custom Password</MenuItem>
-            </Select>
-          </FormControl>
-          
-          {(ruleType === 'minLength' || ruleType === 'maxLength') && (
-            <TextField
-              label="Length"
-              type="number"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              size="small"
-            />
-          )}
-          
-          <TextField
-            label="Error Message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            size="small"
-            multiline
-            rows={2}
-          />
-          
-          <Button
-            variant="contained"
-            onClick={handleAddRule}
-            disabled={!message.trim()}
-            startIcon={<Add />}
-          >
-            Add Rule
-          </Button>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
-    </Dialog>
   );
 };
 
